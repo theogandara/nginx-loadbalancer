@@ -1,0 +1,48 @@
+---- NGINX ----
+docker-compose up -d
+docker-compose exec nginx apk add bash vim
+docker-compose exec nginx bash
+
+---- NODES ----
+docker-compose exec node1 apk add bash vim
+docker-compose exec node1 bash
+
+---- NODES ----
+vim /usr/share/nginx/html/index.html
+
+---- NGINX ----
+vim /etc/nginx/conf.d/default.conf 
+
+upstream nodes{
+ server node1;
+ server node2;
+}
+
+server {
+    listen       80;
+    server_name  localhost;
+
+    location / {
+        proxy_pass http://nodes;
+        }
+}
+
+nginx -t
+nginx -s reload
+
+
+---------------- IP from user
+upstream nodes{
+ server node1;
+ server node2;
+}
+
+server {
+    listen       80;
+    server_name  localhost;
+
+    location / {
+        proxy_pass http://nodes;
+        proxy_set_header X-Real-IP $remote_addr;
+        }
+}
